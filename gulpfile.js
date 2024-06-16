@@ -5,6 +5,9 @@ const browserSync = require('browser-sync').create();
 const plumber = require('gulp-plumber');
 const build = gulp.series(clean, gulp.parallel(html, css, images, fonts, videos));
 const watchapp = gulp.parallel(build, watchFiles, serve);
+const postcss = qulp.require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const mediaquery = require('postcss-combine-media-query');
 
  
 exports.clean = clean;
@@ -26,11 +29,16 @@ function html() {
 
 
 function css() {
+  plugins = [
+    autoprefixer(),
+    mediaquery()
+  ];
   return gulp.src('src/blocks/**/*.css')
           .pipe(plumber())
             .pipe(concat('bundle.css'))
-              .pipe(gulp.dest('dist/'))
-                .pipe(browserSync.reload({stream: true}));
+              .pipe(gulp.postcss(plugins))
+                .pipe(gulp.dest('dist/'))
+                  .pipe(browserSync.reload({stream: true}));
 }
 
 
